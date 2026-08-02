@@ -1,0 +1,90 @@
+generated: '2026-08-02'
+method: probed
+source: >-
+  https://omaze.co.uk/.well-known/openid-configuration,
+  https://omaze.co.uk/.well-known/oauth-authorization-server,
+  https://omaze.co.uk/.well-known/oauth-protected-resource,
+  https://omaze.de/.well-known/openid-configuration — all fetched 2026-08-02.
+description: >-
+  Omaze publishes no API keys and no developer credentials. The only
+  authentication surface it exposes is the Shopify Customer Accounts identity
+  provider that sits behind its UK and German storefronts: a standards-compliant
+  OpenID Connect 1.0 / OAuth 2.0 authorization server, discoverable anonymously,
+  with PKCE required. This profile is derived entirely from the live discovery
+  documents — no securityScheme was inferred from a spec, because there is no
+  spec.
+schemes:
+  - id: shopify-customer-accounts-uk
+    type: openIdConnect
+    market: United Kingdom
+    issuer: https://shopify.com/authentication/27583905878
+    openid_configuration: https://omaze.co.uk/.well-known/openid-configuration
+    file: ../well-known/omaze-uk-openid-configuration.json
+    endpoints:
+      authorization: https://accounts.omaze.co.uk/authentication/oauth/authorize
+      token: https://accounts.omaze.co.uk/authentication/oauth/token
+      end_session: https://accounts.omaze.co.uk/authentication/logout
+      jwks: https://accounts.omaze.co.uk/authentication/.well-known/jwks.json
+    grant_types:
+      - authorization_code
+      - refresh_token
+      - 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+    response_types:
+      - code
+    token_endpoint_auth_methods:
+      - client_secret_basic
+    pkce:
+      required: true
+      code_challenge_methods:
+        - S256
+    id_token_signing_alg:
+      - RS256
+    subject_types:
+      - public
+    claims:
+      - iss
+      - sub
+      - aud
+      - exp
+      - iat
+      - nonce
+      - sid
+      - email
+      - email_verified
+    scopes: ../scopes/omaze-scopes.yml
+  - id: shopify-customer-accounts-de
+    type: openIdConnect
+    market: Germany
+    issuer: https://shopify.com/authentication/69889196213
+    openid_configuration: https://omaze.de/.well-known/openid-configuration
+    file: ../well-known/omaze-de-openid-configuration.json
+    endpoints:
+      authorization: https://accounts.omaze.de/authentication/oauth/authorize
+    note: >-
+      Same Shopify Customer Accounts profile as the UK store, distinct issuer and
+      account host. Scope set is identical.
+protected_resource:
+  spec: RFC 9728 (OAuth 2.0 Protected Resource Metadata)
+  url: https://omaze.co.uk/.well-known/oauth-protected-resource
+  file: ../well-known/omaze-uk-oauth-protected-resource.json
+  resource: https://omaze.co.uk
+  authorization_servers:
+    - https://accounts.omaze.co.uk
+    - https://shopify.com/authentication/27583905878
+  bearer_methods_supported:
+    - header
+anonymous_surfaces:
+  - surface: UCP Shopping MCP endpoint (https://omaze.co.uk/api/ucp/mcp)
+    auth: >-
+      No bearer token is required to reach the endpoint, but the server refuses
+      to negotiate without a resolvable UCP agent profile URI from the calling
+      agent (observed: JSON-RPC -32001 / invalid_profile_url, HTTP 422). Payment
+      completion additionally requires explicit buyer approval.
+  - surface: Storefront product/collection JSON (/products.json, /collections/{handle}/products.json)
+    auth: None. Read-only, anonymous, public.
+not_published:
+  api_keys: No developer API keys, no key-issuance flow, no developer portal.
+  mtls: Not advertised.
+  http_basic: Not advertised.
+  service_accounts: None.
+docs: https://omaze.co.uk/agents.md

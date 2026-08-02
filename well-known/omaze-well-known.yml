@@ -1,0 +1,148 @@
+generated: '2026-08-02'
+method: probed
+source: >-
+  Direct HTTP probes of the /.well-known/ discovery surface on every Omaze host,
+  2026-08-02. Status is the HTTP code observed at fetch time. Only responses that
+  returned a real, correctly-typed payload were saved verbatim.
+description: >-
+  Omaze's two operating storefronts (omaze.co.uk and omaze.de) run on Shopify and
+  therefore publish a genuine machine-readable discovery surface: an OpenID
+  Connect / OAuth 2.0 authorization-server document for Shopify Customer
+  Accounts, an RFC 9728 protected-resource document, and a Universal Commerce
+  Protocol (UCP) merchant profile at /.well-known/ucp that advertises an MCP
+  endpoint for agent-driven commerce. The corporate site (omaze.com) is a
+  client-rendered marketing site and publishes none of these — it answers HTTP
+  404 with a ~56KB HTML shell for every path probed, including /robots.txt, so
+  no 200 on that host would have been trustworthy anyway.
+hosts:
+  - host: https://omaze.co.uk
+    role: UK storefront (Shopify)
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 200
+        type: application/json
+        file: omaze-uk-openid-configuration.json
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        type: application/json
+        file: omaze-uk-oauth-authorization-server.json
+        note: Byte-identical to the openid-configuration document.
+      - path: /.well-known/oauth-protected-resource
+        status: 200
+        type: application/json
+        file: omaze-uk-oauth-protected-resource.json
+      - path: /.well-known/ucp
+        status: 200
+        type: application/json
+        file: omaze-uk-ucp.json
+        note: >-
+          Universal Commerce Protocol merchant profile, version 2026-04-08.
+          Declares the MCP transport endpoint, the shopping capabilities, and
+          the payment handlers (Google Pay, Shopify card, Shop Pay).
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /llms.txt
+        status: 200
+        type: text/markdown
+        file: ../llms/omaze-llms.txt
+      - path: /agents.md
+        status: 200
+        type: text/markdown
+        file: ../llms/omaze-agents.md
+      - path: /robots.txt
+        status: 200
+        type: text/plain
+        note: 'Declares the platform in the first line: "# we use Shopify as our ecommerce platform".'
+  - host: https://omaze.de
+    role: German storefront (Shopify)
+    documents:
+      - path: /.well-known/openid-configuration
+        status: 200
+        type: application/json
+        file: omaze-de-openid-configuration.json
+      - path: /.well-known/ucp
+        status: 200
+        type: application/json
+        file: omaze-de-ucp.json
+      - path: /llms.txt
+        status: 200
+        type: text/markdown
+        file: ../llms/omaze-de-llms.txt
+      - path: /agents.md
+        status: 200
+        type: text/markdown
+      - path: /robots.txt
+        status: 200
+        type: text/plain
+  - host: https://accounts.omaze.co.uk
+    role: Shopify Customer Accounts authorization server for the UK store
+    documents:
+      - path: /authentication/.well-known/jwks.json
+        status: 200
+        type: application/json
+        note: >-
+          JWKS for the UK issuer. Not saved verbatim — signing keys rotate, so a
+          snapshot in the repo would be stale and misleading. Referenced live
+          from authentication/omaze-authentication.yml.
+  - host: https://www.omaze.com
+    role: Corporate / brand site (client-rendered, not a storefront)
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /llms.txt
+        status: 404
+      - path: /.well-known/ucp
+        status: 404
+      - path: /robots.txt
+        status: 404
+        note: >-
+          Every path on this host returns 404 with the same 56,534-byte HTML
+          document — a single-page-app shell. Nothing here is a discovery
+          document.
+  - host: https://api.omaze.com
+    role: probed speculatively
+    documents:
+      - path: '*'
+        status: 0
+        note: Host does not resolve / no TLS listener (curl exit, no HTTP response).
+  - host: https://docs.omaze.com
+    role: probed speculatively
+    documents:
+      - path: '*'
+        status: 0
+        note: Host does not resolve / no TLS listener.
+  - host: https://developer.omaze.com
+    role: probed speculatively
+    documents:
+      - path: '*'
+        status: 0
+        note: Host does not resolve / no TLS listener.
+not_found:
+  security_txt: >-
+    No RFC 9116 security.txt on any Omaze host (404 on omaze.co.uk, omaze.com and
+    omaze.de). No SecurityTxt artifact is emitted.
+  agent_card: >-
+    No A2A Agent Card. Both /.well-known/agent-card.json and the legacy
+    /.well-known/agent.json return 404 on every host. Nothing is written to a2a/ —
+    an agent card may only be recorded when the provider actually serves one.
+  api_catalog: No RFC 9727 /.well-known/api-catalog on any host.

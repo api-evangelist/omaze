@@ -1,0 +1,37 @@
+generated: '2026-08-02'
+method: searched
+source: 'https://omaze.co.uk/agents.md and https://omaze.co.uk/llms.txt, fetched 2026-08-02'
+description: >-
+  Omaze publishes a rate-limit expectation for its agent-facing MCP endpoint in
+  its own agent instructions, but publishes no numeric quota, no window, and no
+  rate-limit response headers. Only what is actually published is recorded here.
+rate_limits:
+  - surface: UCP Shopping MCP endpoint
+    endpoints:
+      - https://omaze.co.uk/api/ucp/mcp
+      - https://omaze.de/api/ucp/mcp
+    scope: per IP address
+    limit_count: null
+    window: null
+    signal:
+      status: 429
+      headers_documented: []
+    client_obligation: 'Back off on 429 responses.'
+    quote: 'Respect rate limits. The MCP endpoint is rate-limited per IP. Back off on 429 responses.'
+    source: https://omaze.co.uk/agents.md
+  - surface: Storefront JSON (read-only)
+    endpoints:
+      - 'https://omaze.co.uk/products.json'
+      - 'https://omaze.co.uk/collections/{handle}/products.json'
+    scope: unknown
+    limit_count: null
+    window: null
+    documented: false
+    note: >-
+      Omaze documents these endpoints as available for read-only browsing but
+      states no rate limit for them. Shopify platform limits apply upstream; no
+      Omaze-published figure exists.
+gaps:
+  - No numeric request quota is published for any surface.
+  - No RateLimit-* / X-RateLimit-* response headers are documented.
+  - No Retry-After behaviour is documented alongside the 429 guidance.

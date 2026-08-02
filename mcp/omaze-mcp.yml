@@ -1,0 +1,146 @@
+generated: '2026-08-02'
+method: probed
+status: published
+source: >-
+  https://omaze.co.uk/llms.txt and https://omaze.co.uk/.well-known/ucp (both
+  fetched 2026-08-02), plus a live JSON-RPC probe of the MCP endpoints on both
+  storefronts.
+description: >-
+  Omaze does not operate a general-purpose developer MCP server. What it does
+  operate — on both of its live storefronts — is a Universal Commerce Protocol
+  (UCP) Shopping service exposed over MCP, provisioned by Shopify and advertised
+  by Omaze in its own /llms.txt and /agents.md. This is a real, addressable,
+  agent-facing surface: an agent can search the draw catalog, build a cart, and
+  drive a checkout to the point of buyer approval. It is the only machine
+  interface Omaze publishes.
+servers:
+  - name: omaze-uk-ucp-shopping
+    market: United Kingdom
+    transport: http
+    protocol: mcp
+    url: https://omaze.co.uk/api/ucp/mcp
+    alias_url: https://omaze-uk-prod.myshopify.com/api/ucp/mcp
+    discovery: https://omaze.co.uk/.well-known/ucp
+    discovery_file: ../well-known/omaze-uk-ucp.json
+    documented_in: ../llms/omaze-llms.txt
+  - name: omaze-de-ucp-shopping
+    market: Germany
+    transport: http
+    protocol: mcp
+    url: https://omaze.de/api/ucp/mcp
+    alias_url: https://omaze-de-prod.myshopify.com/api/ucp/mcp
+    discovery: https://omaze.de/.well-known/ucp
+    discovery_file: ../well-known/omaze-de-ucp.json
+    documented_in: ../llms/omaze-de-llms.txt
+protocol:
+  name: Universal Commerce Protocol (UCP)
+  spec: https://ucp.dev/2026-04-08/specification/overview/
+  service: dev.ucp.shopping
+  version: '2026-04-08'
+  supported_versions:
+    - '2026-04-08'
+    - '2026-01-23'
+  method_schema: https://ucp.dev/2026-04-08/services/shopping/mcp.openrpc.json
+  capabilities_declared:
+    - dev.ucp.shopping.cart
+    - dev.ucp.shopping.checkout
+    - dev.ucp.shopping.fulfillment
+    - dev.ucp.shopping.discount
+    - dev.ucp.shopping.order
+    - dev.ucp.shopping.catalog.search
+    - dev.ucp.shopping.catalog.lookup
+    - dev.shopify.catalog
+introspection:
+  attempted: true
+  attempted_at: '2026-08-02'
+  request: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+  http_status: 422
+  response_error:
+    code: -32001
+    message: UCP discovery failed
+    data_code: invalid_profile_url
+    data_content: 'Unable to fetch agent profile: Missing profile uri'
+  result: gated
+  note: >-
+    tools/list is NOT anonymous on this endpoint. UCP requires the CALLING AGENT
+    to present a resolvable agent profile URI before the server will negotiate;
+    without one the server rejects the handshake with -32001 before any tool
+    schemas are returned. The same result was observed on the UK endpoint, the DE
+    endpoint, and the underlying *.myshopify.com endpoints, with and without an
+    initialize handshake. The live per-tool inputSchema therefore requires an
+    authenticated/profile-bearing introspection run. The tool NAMES below are not
+    guessed — they are the ones Omaze itself publishes in /llms.txt, cross-checked
+    against the UCP Shopping OpenRPC method schema its discovery document points
+    at. No input schemas are reproduced here, because we did not observe them.
+tools:
+  - name: search_catalog
+    capability: dev.ucp.shopping.catalog.search
+    description: Search for products (prize draws) in the store catalog.
+    evidence: 'omaze.co.uk/llms.txt "Typical Agent Flow" step 2; UCP OpenRPC method search_catalog'
+  - name: create_cart
+    capability: dev.ucp.shopping.cart
+    description: Create a cart and add the desired entries.
+    evidence: 'omaze.co.uk/llms.txt step 3; UCP OpenRPC method create_cart'
+  - name: create_checkout
+    capability: dev.ucp.shopping.checkout
+    description: Start the purchase flow for a cart.
+    evidence: 'omaze.co.uk/llms.txt step 4; UCP OpenRPC method create_checkout'
+  - name: update_checkout
+    capability: dev.ucp.shopping.checkout
+    description: Set the buyer's shipping address and delivery method on the checkout.
+    evidence: 'omaze.co.uk/llms.txt step 5; UCP OpenRPC method update_checkout'
+  - name: complete_checkout
+    capability: dev.ucp.shopping.checkout
+    description: Finalize the purchase and place the order. Requires explicit buyer approval of payment.
+    evidence: 'omaze.co.uk/llms.txt step 6; UCP OpenRPC method complete_checkout'
+protocol_methods_not_named_by_omaze:
+  note: >-
+    These are declared by the UCP Shopping OpenRPC schema that Omaze's own
+    discovery document points at, and the matching capability is declared in
+    Omaze's /.well-known/ucp — but Omaze's llms.txt does not name them, and we
+    could not confirm them against a live tools/list. Treat as expected, not
+    verified.
+  methods:
+    - lookup_catalog
+    - get_product
+    - get_cart
+    - update_cart
+    - cancel_cart
+    - get_checkout
+    - cancel_checkout
+    - get_order
+authorization:
+  buyer_approval_required: true
+  rule: >-
+    Omaze's published agent instructions state that agents must not complete
+    payment without explicit, contemporaneous buyer consent, and direct agents
+    that cannot obtain it to route the purchase through Shop Pay via the Shop
+    skill instead.
+  customer_account_oauth:
+    protected_resource: ../well-known/omaze-uk-oauth-protected-resource.json
+    authorization_server: https://accounts.omaze.co.uk
+    scopes: ../scopes/omaze-scopes.yml
+    note: >-
+      The Shopify Customer Account authorization server advertises a
+      `customer-account-mcp-api:full` scope — a separate, authenticated
+      customer-account MCP surface distinct from the anonymous UCP shopping
+      endpoint above.
+payment_handlers:
+  uk:
+    - com.google.pay
+    - dev.shopify.card
+    - dev.shopify.shop_pay
+  de:
+    - com.google.pay
+    - dev.shopify.card
+recommended_agent_path:
+  skill: https://shop.app/SKILL.md
+  note: >-
+    Omaze's llms.txt explicitly recommends that personal-shopping agents install
+    the Shopify Shop skill rather than scripting the storefront directly. That
+    skill is Shopify's, not Omaze's, and is recorded here as a pointer only.
+crosswalk: >-
+  No mcp/omaze-tool-crosswalk.yml is emitted. The crosswalk binds MCP tools to
+  backing OpenAPI operationIds; Omaze publishes no OpenAPI and no GraphQL
+  endpoint (probed — /graphql is 404 on every host), so there is nothing to bind
+  against and a crosswalk would be invented rather than derived.

@@ -1,0 +1,40 @@
+generated: '2026-08-02'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: www.omaze.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Feb 27 23:59:59 2027 GMT
+  hsts: false
+- host: omaze.co.uk
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Sep 17 20:08:32 2026 GMT
+  hsts: true
+  hsts_max_age: 7889238
+- host: omaze.de
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Sep  7 19:12:34 2026 GMT
+  hsts: true
+  hsts_max_age: 7889238
+domains:
+- domain: omaze.com
+  dnssec: true
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: reject
+- domain: omaze.co.uk
+  dnssec: true
+  caa:
+  - 0 issuewild "awstrust.com"
+  - 128 issue "letsencrypt.org"
+  - 128 issue "www.digicert.com"
+  - 128 issue "www.globalsign.com"
+  - 128 issuewild "letsencrypt.org"
+  - 128 issuewild "www.digicert.com"
+  spf: true
+  dmarc: true
+  dmarc_policy: reject

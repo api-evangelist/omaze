@@ -1,0 +1,88 @@
+generated: '2026-08-02'
+method: probed
+source: >-
+  https://omaze.co.uk/.well-known/ucp, https://omaze.de/.well-known/ucp,
+  https://omaze.co.uk/agents.md, plus probes for a status page and a deprecation
+  policy — all 2026-08-02.
+description: >-
+  Omaze operates a consumer prize-draw storefront, not a developer platform, and
+  publishes no API lifecycle policy of its own. The only versioning it does
+  express is protocol-level: the UCP version its merchant profile advertises and
+  the older version it still accepts. Everything absent below was probed for and
+  not found — none of it is assumed.
+versioning:
+  scheme: date-based protocol version (Universal Commerce Protocol)
+  current: '2026-04-08'
+  supported:
+    - version: '2026-04-08'
+      profile_uk: https://omaze-uk-prod.myshopify.com/.well-known/ucp/2026-04-08
+      profile_de_declared: true
+      status: latest stable
+    - version: '2026-01-23'
+      profile_uk: https://omaze-uk-prod.myshopify.com/.well-known/ucp/2026-01-23
+      status: still accepted
+  mechanism: >-
+    Version negotiation via the merchant discovery profile at /.well-known/ucp,
+    which publishes both the current version and a map of every supported version
+    to its own version-pinned profile document. Capability entries additionally
+    carry a `requires.protocol.min` floor (e.g. dev.ucp.shopping.fulfillment and
+    dev.ucp.shopping.discount require protocol >= 2026-04-08).
+  owner: >-
+    The version ladder is defined by the UCP specification and provisioned by
+    Shopify. Omaze publishes which versions its storefronts speak; it does not
+    author the schedule.
+  storefront_json: >-
+    The read-only storefront JSON endpoints (/products.json, etc.) carry no
+    version identifier and no published versioning policy.
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  note: >-
+    No deprecation policy, no RFC 8594 Sunset/Deprecation header usage, and no
+    published removal timeline for any surface. The presence of a second
+    supported UCP version (2026-01-23) is version negotiation, not a deprecation
+    policy, and no `Deprecation` pointer is wired into apis.yml on that basis.
+status_page:
+  url: null
+  published: false
+  probed:
+    - url: https://status.omaze.co.uk
+      result: 'host does not resolve'
+  note: >-
+    No status page or public uptime dashboard was found for any Omaze property.
+    No `StatusPage` pointer is wired into apis.yml.
+sla:
+  url: null
+  published_uptime_target: null
+  note: >-
+    No service-level agreement is published. Omaze's consumer terms
+    (https://omaze.co.uk/pages/legal-terms) govern draw entry, not API
+    availability.
+changelog:
+  url: null
+  published: false
+  note: >-
+    No dated API/protocol changelog is published by Omaze. Its /blogs/news feed
+    is consumer editorial (draw announcements, winner stories), not a release
+    log, so no ChangeLog artifact is emitted.
+markets:
+  - market: United Kingdom
+    storefront: https://omaze.co.uk
+    status: live
+  - market: Germany
+    storefront: https://omaze.de
+    status: live
+  - market: United States
+    storefront: null
+    status: >-
+      No US storefront surface. www.omaze.com is a client-rendered corporate site
+      that answers 404 for every path probed, including /robots.txt, and carries
+      no commerce or agent surface. It links out to the UK and German draws.
+gaps:
+  - No deprecation policy.
+  - No status page.
+  - No SLA.
+  - No API changelog.

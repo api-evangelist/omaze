@@ -1,0 +1,67 @@
+generated: '2026-08-02'
+method: probed
+source: >-
+  scopes_supported from https://omaze.co.uk/.well-known/openid-configuration and
+  https://omaze.de/.well-known/openid-configuration, fetched 2026-08-02.
+description: >-
+  The OAuth 2.0 / OpenID Connect scopes advertised by the Shopify Customer
+  Accounts authorization server behind the Omaze UK and German storefronts. Both
+  markets advertise an identical set. These are the provider's own published
+  values, read straight from the discovery document — none are inferred, and no
+  scope descriptions beyond what the standard defines are asserted, because
+  Omaze publishes no scope reference page of its own.
+issuers:
+  - market: United Kingdom
+    issuer: https://shopify.com/authentication/27583905878
+    authorization_server: https://accounts.omaze.co.uk
+  - market: Germany
+    issuer: https://shopify.com/authentication/69889196213
+    authorization_server: https://accounts.omaze.de
+flows:
+  - type: authorization_code
+    pkce_required: true
+    code_challenge_methods:
+      - S256
+scopes:
+  - name: openid
+    description: >-
+      Standard OpenID Connect scope. Requests an ID token identifying the
+      authenticated Omaze customer.
+    standard: OpenID Connect Core 1.0
+  - name: email
+    description: >-
+      Standard OpenID Connect scope. Releases the `email` and `email_verified`
+      claims for the authenticated customer.
+    standard: OpenID Connect Core 1.0
+  - name: 'customer-account-api:full'
+    description: >-
+      Full access to the Shopify Customer Account API on behalf of the signed-in
+      customer — the account surface behind /account on the storefront (orders,
+      entries, subscriptions, profile).
+    standard: Shopify Customer Accounts
+  - name: 'customer-account-mcp-api:full'
+    description: >-
+      Full access to the authenticated Customer Account MCP surface. This is the
+      agent-facing counterpart to `customer-account-api:full`, and is distinct
+      from the anonymous UCP shopping MCP endpoint at /api/ucp/mcp.
+    standard: Shopify Customer Accounts
+    note: >-
+      Notable: Omaze's identity layer advertises an MCP-scoped grant. An agent
+      holding this scope acts as the customer against their own account, not as
+      an anonymous shopper.
+claims_supported:
+  - iss
+  - sub
+  - aud
+  - exp
+  - iat
+  - nonce
+  - sid
+  - email
+  - email_verified
+docs: null
+docs_note: >-
+  Omaze publishes no scope/permission reference page. The authoritative source
+  for these values is the live discovery document; Shopify documents the
+  underlying scopes at https://shopify.dev/docs/api/customer.
+authentication: ../authentication/omaze-authentication.yml

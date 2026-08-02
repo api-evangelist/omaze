@@ -1,23 +1,185 @@
 aid: omaze
 name: Omaze
-description: 'Omaze is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  Omaze is a for-profit social-impact entertainment company that runs online
+  prize draws to raise money for charity. Founded in 2012 in Culver City,
+  California by Matthew Pohlson and Ryan Cummins, it lets people enter draws for
+  houses, supercars, cash and once-in-a-lifetime experiences, with a share of
+  every entry going to a partner nonprofit; the company reports raising more than
+  $250 million for over 600 charities and creating 50+ millionaires. Its live
+  consumer operations today are the United Kingdom (omaze.co.uk) and Germany
+  (omaze.de), both built on Shopify, while omaze.com serves as the corporate and
+  brand site. Omaze publishes no developer program, no OpenAPI and no SDKs, but
+  both storefronts do expose a genuine machine-readable agent surface: a
+  Universal Commerce Protocol (UCP) merchant profile at /.well-known/ucp, a UCP
+  Shopping MCP endpoint at /api/ucp/mcp, published agent instructions at
+  /llms.txt and /agents.md, anonymous read-only storefront product JSON, and a
+  standards-compliant OpenID Connect authorization server for customer accounts.
 url: https://raw.githubusercontent.com/api-evangelist/omaze/refs/heads/main/apis.yml
+image: https://omaze.co.uk/cdn/shop/files/social_image-2.png?v=1753698911
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment
 specificationVersion: '0.20'
 created: '2026-08-02'
 modified: '2026-08-02'
 tags:
 - Company
-apis: []
+- Charity
+- Fundraising
+- Nonprofit
+- Prize Draws
+- Sweepstakes
+- Ecommerce
+- Agentic Commerce
+- Universal Commerce Protocol
+- Model Context Protocol
+- Shopify
+- United Kingdom
+- Germany
+apis:
+- aid: omaze:omaze-uk-ucp-shopping-mcp
+  name: Omaze UK UCP Shopping MCP
+  description: >-
+    The Universal Commerce Protocol Shopping service that Omaze UK exposes over
+    the Model Context Protocol, advertised by Omaze in its own /agents.md and
+    /llms.txt and described by the merchant profile at /.well-known/ucp. It lets
+    an agent search the Omaze UK prize-draw catalog, build a cart, and drive a
+    checkout up to the point of buyer-approved payment. Protocol version
+    2026-04-08 (2026-01-23 also accepted). The endpoint is live but will not
+    negotiate a session until the calling agent presents a resolvable UCP agent
+    profile URI, so per-tool input schemas require a profile-bearing
+    introspection run.
+  humanURL: https://omaze.co.uk/agents.md
+  baseURL: https://omaze.co.uk/api/ucp/mcp
+  tags:
+  - MCP
+  - Agentic Commerce
+  - Universal Commerce Protocol
+  - Ecommerce
+  - Checkout
+  properties:
+  - type: MCPServer
+    url: mcp/omaze-mcp.yml
+  - type: WellKnown
+    url: well-known/omaze-uk-ucp.json
+  - type: Authentication
+    url: authentication/omaze-authentication.yml
+  - type: RateLimits
+    url: rate-limits/omaze-rate-limits.yml
+  - type: ErrorCatalog
+    url: errors/omaze-problem-types.yml
+- aid: omaze:omaze-de-ucp-shopping-mcp
+  name: Omaze Germany UCP Shopping MCP
+  description: >-
+    The German-market counterpart of the Omaze UCP Shopping service, exposed over
+    MCP at omaze.de/api/ucp/mcp and described by the merchant profile at
+    omaze.de/.well-known/ucp. Same protocol version (2026-04-08) and same
+    shopping capabilities as the UK store; the payment-handler set differs (Google
+    Pay and Shopify card, without Shop Pay). Backed by its own Shopify Customer
+    Accounts issuer at accounts.omaze.de.
+  humanURL: https://omaze.de/agents.md
+  baseURL: https://omaze.de/api/ucp/mcp
+  tags:
+  - MCP
+  - Agentic Commerce
+  - Universal Commerce Protocol
+  - Ecommerce
+  - Germany
+  properties:
+  - type: MCPServer
+    url: mcp/omaze-mcp.yml
+  - type: WellKnown
+    url: well-known/omaze-de-ucp.json
+- aid: omaze:omaze-uk-storefront-json
+  name: Omaze UK Storefront JSON
+  description: >-
+    The anonymous, read-only JSON surface of the Omaze UK storefront, documented
+    by Omaze itself in /agents.md for agents that only need to read store data
+    without transacting. Covers product listings (/products.json), individual
+    products (/products/{handle}.json), collection contents
+    (/collections/{handle}/products.json) and the sitemap. No credentials are
+    required and no rate limit is published for it; Omaze publishes no OpenAPI
+    describing it.
+  humanURL: https://omaze.co.uk/agents.md
+  baseURL: https://omaze.co.uk
+  tags:
+  - Products
+  - Catalog
+  - Ecommerce
+  - Read Only
+  properties:
+  - type: LLMsTxt
+    url: llms/omaze-llms.txt
+  - type: Conventions
+    url: conventions/omaze-conventions.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/omaze-domain-security.yml
 - type: Website
+  url: https://www.omaze.com
+- type: Website
+  url: https://omaze.co.uk
+- type: Website
+  url: https://omaze.de
+- type: DeveloperPortal
+  url: https://omaze.co.uk/agents.md
+- type: Documentation
+  url: https://omaze.co.uk/agents.md
+- type: GettingStarted
+  url: https://omaze.co.uk/llms.txt
+- type: LLMsTxt
+  url: llms/omaze-llms.txt
+- type: MCPServer
+  url: mcp/omaze-mcp.yml
+- type: WellKnown
+  url: well-known/omaze-well-known.yml
+- type: Authentication
+  url: authentication/omaze-authentication.yml
+- type: OAuthScopes
+  url: scopes/omaze-scopes.yml
+- type: OpenIDConnect
+  url: https://omaze.co.uk/.well-known/openid-configuration
+- type: Conventions
+  url: conventions/omaze-conventions.yml
+- type: RateLimits
+  url: rate-limits/omaze-rate-limits.yml
+- type: ErrorCatalog
+  url: errors/omaze-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/omaze-lifecycle.yml
+- type: Conformance
+  url: conformance/omaze-conformance.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Support
+  url: https://omaze.co.uk/pages/contact-us
+- type: HelpCenter
+  url: https://omaze.co.uk/pages/faqs
+- type: Blog
+  url: https://omaze.co.uk/blogs/news
+- type: GitHubOrganization
+  url: https://github.com/Omaze
+- type: SignUp
+  url: https://omaze.co.uk/account/register
+- type: Login
+  url: https://omaze.co.uk/account/login
+- type: TermsOfService
+  url: https://omaze.co.uk/pages/legal-terms
+- type: PrivacyPolicy
+  url: https://omaze.co.uk/policies/privacy-policy
+- type: Careers
+  url: https://omaze.company/careers.html
+- type: SecondaryMarketListing
   url: https://forgeglobal.com/omaze_stock/
+x-enrichment:
+  date: '2026-08-02'
+  status: enriched
+  artifacts_added: 21
+  pass: local-v1

@@ -1,0 +1,165 @@
+generated: '2026-08-02'
+method: probed
+source: >-
+  Live probes of every Omaze host plus the provider's own published documents —
+  /.well-known/openid-configuration, /.well-known/oauth-authorization-server,
+  /.well-known/oauth-protected-resource, /.well-known/ucp, /agents.md, /llms.txt,
+  /pages/legal-terms and /policies/privacy-policy — all 2026-08-02.
+description: >-
+  Which cross-cutting standards Omaze's public surface actually conforms to.
+  Every `conforms: true` below is backed by a document we fetched; every
+  `conforms: false` was probed for and missed. Omaze is not a developer platform,
+  so the conformance profile is narrow but real: it is standards-compliant on the
+  identity and agent-commerce axes (OAuth 2.0, OpenID Connect, PKCE, RFC 9728,
+  MCP, UCP) and absent on the API-description and disclosure axes (no OpenAPI, no
+  AsyncAPI, no security.txt, no RFC 9457, no A2A agent card).
+standards:
+  - id: oauth2
+    name: OAuth 2.0 Authorization Framework (RFC 6749)
+    conforms: true
+    evidence: >-
+      Authorization-code grant with refresh_token and jwt-bearer grant types,
+      client_secret_basic token endpoint auth, published at
+      https://omaze.co.uk/.well-known/oauth-authorization-server (HTTP 200).
+    artifact: ../authentication/omaze-authentication.yml
+  - id: rfc8414
+    name: OAuth 2.0 Authorization Server Metadata (RFC 8414)
+    conforms: true
+    evidence: >-
+      /.well-known/oauth-authorization-server returns a valid metadata document
+      on both omaze.co.uk and omaze.de.
+    artifact: ../well-known/omaze-uk-oauth-authorization-server.json
+  - id: rfc9728
+    name: OAuth 2.0 Protected Resource Metadata (RFC 9728)
+    conforms: true
+    evidence: >-
+      /.well-known/oauth-protected-resource returns
+      {"resource":"https://omaze.co.uk","authorization_servers":[...],
+      "bearer_methods_supported":["header"]} (HTTP 200).
+    artifact: ../well-known/omaze-uk-oauth-protected-resource.json
+  - id: oidc
+    name: OpenID Connect Core 1.0 + Discovery
+    conforms: true
+    evidence: >-
+      /.well-known/openid-configuration publishes issuer, authorization/token/
+      end_session endpoints, jwks_uri, RS256 id_token signing, public subject
+      types and the standard openid/email scopes on both storefronts.
+    artifact: ../well-known/omaze-uk-openid-configuration.json
+  - id: rfc7636
+    name: 'PKCE: Proof Key for Code Exchange (RFC 7636)'
+    conforms: true
+    evidence: 'code_challenge_methods_supported: ["S256"] — S256 only, plain not offered.'
+  - id: mcp
+    name: Model Context Protocol
+    conforms: true
+    evidence: >-
+      Live JSON-RPC 2.0 MCP endpoints at https://omaze.co.uk/api/ucp/mcp and
+      https://omaze.de/api/ucp/mcp, advertised in Omaze's own /agents.md and in
+      the /.well-known/ucp service map with transport "mcp". Session negotiation
+      is gated on a UCP agent profile, so tool schemas were not observed.
+    artifact: ../mcp/omaze-mcp.yml
+    caveat: gated
+  - id: ucp
+    name: Universal Commerce Protocol 2026-04-08
+    conforms: true
+    evidence: >-
+      /.well-known/ucp publishes version 2026-04-08 (plus 2026-01-23), the
+      dev.ucp.shopping service over MCP and embedded transports, eight declared
+      capabilities (cart, checkout, fulfillment, discount, order, catalog.search,
+      catalog.lookup, dev.shopify.catalog) and three payment handlers.
+    artifact: ../well-known/omaze-uk-ucp.json
+  - id: llmstxt
+    name: llms.txt / agents.md agent instructions
+    conforms: true
+    evidence: >-
+      https://omaze.co.uk/llms.txt and https://omaze.co.uk/agents.md both return
+      HTTP 200 text/markdown; omaze.de publishes the same pair. agents.md is
+      declared canonical, llms.txt mirrors it.
+    artifact: ../llms/omaze-llms.txt
+  - id: buyer-approval-invariant
+    name: Human-in-the-loop payment approval
+    conforms: true
+    evidence: >-
+      Omaze's published agent instructions state agents must not complete payment
+      without explicit contemporaneous buyer consent, and prescribe a fallback
+      (Shop Pay via the Shop skill) when consent cannot be obtained.
+  - id: openapi
+    name: OpenAPI Specification
+    conforms: false
+    evidence: >-
+      /openapi.json, /openapi.yaml, /swagger.json, /api-docs, /docs and /redoc
+      probed on omaze.co.uk, omaze.com, omaze.de and the speculative
+      api./docs./developer. subdomains. All 404 or non-resolving. No OpenAPI
+      exists.
+  - id: graphql
+    name: GraphQL
+    conforms: false
+    evidence: '/graphql returns HTTP 404 on every Omaze host. No introspectable schema.'
+  - id: asyncapi
+    name: AsyncAPI
+    conforms: false
+    evidence: >-
+      Omaze publishes no event, streaming or webhook surface of its own — no
+      AsyncAPI document and no webhook catalog in /agents.md or the UCP profile.
+      Not penalized; there is no event surface to describe.
+  - id: a2a
+    name: A2A Agent Card
+    conforms: false
+    evidence: >-
+      /.well-known/agent-card.json and the legacy /.well-known/agent.json both
+      return HTTP 404 on omaze.co.uk, omaze.com and omaze.de.
+  - id: rfc9116
+    name: 'security.txt (RFC 9116)'
+    conforms: false
+    evidence: '/.well-known/security.txt returns HTTP 404 on every Omaze host.'
+  - id: rfc9457
+    name: 'Problem Details for HTTP APIs (RFC 9457)'
+    conforms: false
+    evidence: >-
+      No application/problem+json observed. The MCP surface uses the JSON-RPC 2.0
+      error object; the storefront returns plain Shopify JSON.
+    artifact: ../errors/omaze-problem-types.yml
+  - id: rfc8594
+    name: 'Sunset header (RFC 8594) / deprecation signaling'
+    conforms: false
+    evidence: 'No Sunset or Deprecation headers, and no published deprecation policy.'
+    artifact: ../lifecycle/omaze-lifecycle.yml
+  - id: rfc9727
+    name: 'api-catalog (RFC 9727)'
+    conforms: false
+    evidence: '/.well-known/api-catalog returns HTTP 404 on every host.'
+  - id: idempotency
+    name: Idempotent request keys
+    conforms: false
+    evidence: >-
+      No idempotency key, replay window or retry-safety guarantee is documented
+      for create_cart / create_checkout / complete_checkout.
+    artifact: ../conventions/omaze-conventions.yml
+transport_security:
+  tls: TLSv1.3 on omaze.com, omaze.co.uk and omaze.de
+  hsts: 'present on omaze.co.uk and omaze.de (max-age 7889238); absent on www.omaze.com'
+  dnssec: enabled on omaze.com and omaze.co.uk
+  caa: 'published for omaze.co.uk; none for omaze.com'
+  spf_dmarc: 'SPF and DMARC present on both, DMARC policy p=reject'
+  artifact: ../security/omaze-domain-security.yml
+certifications:
+  published: false
+  note: >-
+    No trust center, no SOC 2 / ISO 27001 / PCI DSS / HIPAA claim, and no bug
+    bounty or vulnerability-disclosure program was found on any Omaze host
+    (probed 2026-08-02). No `Compliance`, `TrustCenter` or `Security` pointer is
+    wired into apis.yml, because there is nothing published to point at.
+regulatory:
+  - regime: UK prize-draw / gambling law
+    posture: >-
+      Omaze's Official Rules state the Million Pound House Draw and Monthly
+      Millionaire Cash Draw "are not a charity raffle, house or cash raffle or
+      house or cash lottery but a prize draw", and that entry includes a free
+      method of entry via post — the structure that keeps a UK promotion outside
+      Gambling Act licensing.
+    source: https://omaze.co.uk/pages/legal-terms
+  - regime: UK GDPR / Data Protection Act
+    posture: >-
+      The privacy notice describes data-subject rights and names the Information
+      Commissioner's Office as the UK supervisory authority for complaints.
+    source: https://omaze.co.uk/policies/privacy-policy

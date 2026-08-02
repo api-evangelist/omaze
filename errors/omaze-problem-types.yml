@@ -1,0 +1,74 @@
+generated: '2026-08-02'
+method: probed
+source: >-
+  Live JSON-RPC probes of https://omaze.co.uk/api/ucp/mcp,
+  https://omaze.de/api/ucp/mcp and the underlying *.myshopify.com endpoints, plus
+  the rate-limit guidance published at https://omaze.co.uk/agents.md — all
+  2026-08-02.
+description: >-
+  Omaze publishes no error reference. This catalog records only errors actually
+  OBSERVED on the wire, plus the one error condition Omaze documents in prose.
+  There is no OpenAPI to derive 4xx/5xx responses from, so nothing here is
+  inferred from a spec.
+format: json-rpc-2.0
+rfc9457: false
+envelope:
+  description: >-
+    The MCP surface returns a standard JSON-RPC 2.0 error object. Shopify extends
+    it with a `data` member carrying a machine-readable code, human-readable
+    content, and a browser continuation URL the agent can hand back to the buyer.
+  shape:
+    jsonrpc: '2.0'
+    id: '<request id>'
+    error:
+      code: '<integer JSON-RPC error code>'
+      message: '<short human-readable summary>'
+      data:
+        code: '<machine-readable string code>'
+        content: '<detail>'
+        continue_url: '<https URL for the buyer to continue in a browser>'
+errors:
+  - code: -32001
+    http_status: 422
+    message: UCP discovery failed
+    data_code: invalid_profile_url
+    detail: 'Unable to fetch agent profile: Missing profile uri'
+    meaning: >-
+      The calling agent did not present a resolvable UCP agent profile URI, so
+      the server refused to negotiate the session. Returned before any tool is
+      exposed — tools/list and initialize both fail this way.
+    remediation: >-
+      Publish a UCP agent profile and present its URI on the request. See
+      https://ucp.dev.
+    observed: true
+    observed_at: '2026-08-02'
+    observed_on:
+      - https://omaze.co.uk/api/ucp/mcp
+      - https://omaze.de/api/ucp/mcp
+      - https://omaze-uk-prod.myshopify.com/api/ucp/mcp
+    continue_url_example: https://omaze-uk-prod.myshopify.com/
+  - code: null
+    http_status: 429
+    message: Rate limited
+    meaning: The MCP endpoint is rate-limited per IP.
+    remediation: 'Back off and retry. Omaze publishes no Retry-After guidance and no quota figure.'
+    observed: false
+    documented: true
+    source: https://omaze.co.uk/agents.md
+  - code: null
+    http_status: 404
+    message: Not found
+    meaning: >-
+      Returned by the storefront for unknown handles and for every unmatched path
+      on the corporate site (www.omaze.com serves a 56KB HTML shell with a 404
+      status for all paths, including /robots.txt).
+    remediation: Check the product/collection handle against /sitemap.xml.
+    observed: true
+    observed_at: '2026-08-02'
+gaps:
+  - No published error reference or error-code registry.
+  - No application/problem+json (RFC 9457) on any surface.
+  - >-
+    No documented error taxonomy for the checkout flow — the failure modes of
+    create_checkout / complete_checkout are undiscoverable without a
+    profile-bearing session.

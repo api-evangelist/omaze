@@ -1,0 +1,43 @@
+generated: '2026-08-02'
+method: generated
+source: >-
+  Packaged from Omaze's own published agent instructions
+  (https://omaze.co.uk/agents.md and /llms.txt), its UCP merchant profile
+  (https://omaze.co.uk/.well-known/ucp), and the repo artifacts derived from live
+  probes on 2026-08-02.
+description: >-
+  Agent Skills for the only machine surface Omaze publishes — the Universal
+  Commerce Protocol Shopping service its UK and German storefronts expose over
+  MCP. Every operation named in these skills is a tool Omaze itself publishes;
+  none was invented. There is no OpenAPI to ground further skills in, so the
+  catalog is deliberately small.
+skills:
+  - name: omaze-uk-enter-prize-draw
+    file: omaze-uk-enter-prize-draw.md
+    api: omaze:omaze-uk-ucp-shopping-mcp
+    endpoint: https://omaze.co.uk/api/ucp/mcp
+    summary: >-
+      Buy an entry into an Omaze UK charity prize draw on a buyer's behalf —
+      discover the merchant profile, search the draw catalog, build a cart, set
+      fulfilment, and stop at buyer-approved payment.
+    operations:
+      - search_catalog
+      - create_cart
+      - create_checkout
+      - update_checkout
+      - complete_checkout
+    constraints:
+      - Requires a resolvable UCP agent profile URI; otherwise -32001 at handshake.
+      - Payment completion requires explicit contemporaneous buyer approval.
+      - No published idempotency contract — complete_checkout is not retry-safe.
+notes:
+  german_store: >-
+    The same flow applies to https://omaze.de/api/ucp/mcp with GB→DE buyer
+    context and without the Shop Pay payment handler. It is not packaged as a
+    separate skill because the steps are identical.
+  provider_published_skills: >-
+    Omaze publishes no skills/ directory and no AGENTS.md of its own. Its
+    /agents.md is a store description, not a packaged skill, and is captured
+    verbatim at ../llms/omaze-agents.md. Omaze does recommend a third-party
+    skill — Shopify's https://shop.app/SKILL.md — which is not an Omaze artifact
+    and is recorded as a pointer only.

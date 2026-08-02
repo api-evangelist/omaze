@@ -1,0 +1,155 @@
+generated: '2026-08-02'
+method: probed
+source: >-
+  https://omaze.co.uk/agents.md and https://omaze.co.uk/llms.txt (Omaze's own
+  published agent instructions), https://omaze.co.uk/.well-known/ucp, and live
+  probes of the storefront JSON endpoints — all 2026-08-02.
+description: >-
+  Cross-cutting request/response semantics for the only machine surfaces Omaze
+  exposes: the UCP Shopping MCP endpoint and the anonymous Shopify storefront
+  JSON endpoints. Omaze authors none of this protocol itself — it is Shopify's
+  platform behaviour, adopted and explicitly advertised by Omaze in its own
+  /agents.md. Everything below is either quoted from that document or observed on
+  the wire. Where a convention is not documented, that is recorded as unknown
+  rather than assumed.
+
+surfaces:
+  - name: UCP Shopping MCP
+    style: JSON-RPC 2.0 over HTTP POST (Model Context Protocol)
+    endpoints:
+      uk: https://omaze.co.uk/api/ucp/mcp
+      de: https://omaze.de/api/ucp/mcp
+    content_type: application/json
+    accept: 'application/json, text/event-stream'
+    discovery: /.well-known/ucp
+  - name: Storefront JSON (read-only)
+    style: REST-ish JSON over HTTPS GET
+    host_uk: https://omaze.co.uk
+    host_de: https://omaze.de
+    endpoints:
+      - 'GET /products.json — all products'
+      - 'GET /products/{handle}.json — a single product'
+      - 'GET /collections/{handle}/products.json — products in a collection'
+      - 'GET /collections/all — HTML collection listing'
+      - 'GET /search?q={query}&type=product — storefront search'
+      - 'GET /sitemap.xml'
+    verified: >-
+      GET /products.json?limit=1 and GET /collections/all/products.json?limit=1
+      both returned HTTP 200 application/json on omaze.co.uk and omaze.de on
+      2026-08-02.
+    note: >-
+      /search and /search/suggest.json are Disallow-ed in robots.txt even though
+      the docs list search; treat crawler etiquette as binding there.
+
+authentication:
+  anonymous_read: >-
+    The storefront JSON endpoints and the UCP discovery document require no
+    credentials.
+  agent_profile: >-
+    The MCP endpoint requires the calling agent to present a resolvable UCP agent
+    profile URI. Without it the server returns JSON-RPC error -32001
+    (invalid_profile_url) with HTTP 422 before any tool is exposed.
+  customer_context: >-
+    Acting as a signed-in Omaze customer requires an OAuth 2.0 authorization-code
+    + PKCE flow against Shopify Customer Accounts.
+  detail: ../authentication/omaze-authentication.yml
+
+buyer_approval:
+  required: true
+  scope: All payment completion (complete_checkout).
+  quote: >-
+    "Checkout requires human approval. Agents must not complete payment without
+    explicit buyer consent. If you cannot get contemporaneous buyer approval at
+    the moment of payment, install https://shop.app/SKILL.md and route the
+    purchase through Shop Pay instead."
+  note: >-
+    This is the strongest runtime constraint Omaze publishes and it is
+    non-negotiable — it is an invariant of the surface, not a recommendation.
+
+buyer_context:
+  documented: true
+  parameters:
+    - context.address_country
+    - context.currency
+  purpose: Accurate pricing and availability for the buyer's market.
+
+pagination:
+  style: page + limit (Shopify storefront JSON)
+  documented_by_omaze: false
+  observed_params:
+    limit: 'honoured — ?limit=1 returned a single product on both stores'
+    page: 'Shopify storefront convention; not documented by Omaze'
+  note: >-
+    Omaze's agents.md lists the endpoints but does not document their pagination
+    contract. Only `limit` was verified on the wire; do not assume cursor
+    semantics.
+
+idempotency:
+  supported: unknown
+  documented: false
+  note: >-
+    Neither Omaze's agents.md/llms.txt nor its UCP discovery document mentions an
+    idempotency key, replay window, or retry-safety guarantee for
+    create_cart/create_checkout/complete_checkout. No Idempotency pointer is
+    wired into apis.yml, because asserting one without published evidence would
+    be a fabrication. This is a genuine gap in an agent-commerce surface where
+    complete_checkout moves money.
+
+rate_limiting:
+  documented: true
+  quote: 'The MCP endpoint is rate-limited per IP. Back off on 429 responses.'
+  signal: HTTP 429
+  published_numbers: none
+  scope: per-IP, MCP endpoint
+  detail: ../rate-limits/omaze-rate-limits.yml
+
+versioning:
+  scheme: date-based protocol versions (UCP)
+  current: '2026-04-08'
+  also_supported:
+    - '2026-01-23'
+  negotiation: >-
+    Version-specific profiles are published at
+    /.well-known/ucp/{version} on the underlying myshopify host; the root
+    /.well-known/ucp advertises the current version plus the supported set.
+  api_versioning: >-
+    Omaze publishes no versioning policy of its own for the storefront JSON
+    endpoints.
+  detail: ../lifecycle/omaze-lifecycle.yml
+
+error_envelope:
+  style: JSON-RPC 2.0 error object (MCP surface)
+  shape:
+    jsonrpc: '2.0'
+    id: request id
+    error:
+      code: integer
+      message: string
+      data:
+        code: machine-readable string code
+        content: human-readable detail
+        continue_url: 'URL the agent can hand to the buyer to continue in a browser'
+  rfc9457: false
+  note: >-
+    The storefront JSON endpoints return plain Shopify JSON; no
+    application/problem+json was observed anywhere.
+  detail: ../errors/omaze-problem-types.yml
+
+request_tracing:
+  documented: false
+  note: No request-id or correlation-id header is documented by Omaze.
+
+field_expansion:
+  supported: unknown
+  documented: false
+
+metadata:
+  supported: unknown
+  documented: false
+
+recommended_client:
+  skill: https://shop.app/SKILL.md
+  note: >-
+    Omaze explicitly recommends that buy-for-me agents install the Shopify Shop
+    skill rather than scripting the storefront, and prefers it over
+    screen-scraping. That skill is published by Shopify, not by Omaze.
