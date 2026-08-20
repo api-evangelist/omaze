@@ -28,6 +28,20 @@ tags:
 - Company
 - Charity
 - Fundraising
+- Non-Profit
+- Prize Draws
+- Sweepstakes
+- E-Commerce
+- Agentic Commerce
+- Universal Commerce Protocol
+- MCP
+- Shopify
+- United Kingdom
+- Germany
+tags_raw:
+- Company
+- Charity
+- Fundraising
 - Nonprofit
 - Prize Draws
 - Sweepstakes
@@ -54,6 +68,12 @@ apis:
   humanURL: https://omaze.co.uk/agents.md
   baseURL: https://omaze.co.uk/api/ucp/mcp
   tags:
+  - MCP
+  - Agentic Commerce
+  - Universal Commerce Protocol
+  - E-Commerce
+  - Checkout
+  tags_raw:
   - MCP
   - Agentic Commerce
   - Universal Commerce Protocol
@@ -85,6 +105,12 @@ apis:
   - MCP
   - Agentic Commerce
   - Universal Commerce Protocol
+  - E-Commerce
+  - Germany
+  tags_raw:
+  - MCP
+  - Agentic Commerce
+  - Universal Commerce Protocol
   - Ecommerce
   - Germany
   properties:
@@ -105,6 +131,11 @@ apis:
   humanURL: https://omaze.co.uk/agents.md
   baseURL: https://omaze.co.uk
   tags:
+  - Product
+  - Catalog
+  - E-Commerce
+  - Read Only
+  tags_raw:
   - Products
   - Catalog
   - Ecommerce
