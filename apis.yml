@@ -16,6 +16,17 @@ description: >-
   /llms.txt and /agents.md, anonymous read-only storefront product JSON, and a
   standards-compliant OpenID Connect authorization server for customer accounts.
 url: https://raw.githubusercontent.com/api-evangelist/omaze/refs/heads/main/apis.yml
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://omaze.co.uk/cdn/shop/files/social_image-2.png?v=1753698911
 x-type: company
 x-source: harvest:secondary-market
