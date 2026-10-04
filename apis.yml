@@ -116,6 +116,9 @@ apis:
     url: rate-limits/omaze-rate-limits.yml
   - type: ErrorCatalog
     url: errors/omaze-problem-types.yml
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: ucp
 - aid: omaze:omaze-de-ucp-shopping-mcp
   name: Omaze Germany UCP Shopping MCP
   description: >-
@@ -144,6 +147,9 @@ apis:
     url: mcp/omaze-mcp.yml
   - type: WellKnown
     url: well-known/omaze-de-ucp.json
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: ucp
 - aid: omaze:omaze-uk-storefront-json
   name: Omaze UK Storefront JSON
   description: >-
@@ -171,6 +177,9 @@ apis:
     url: llms/omaze-llms.txt
   - type: Conventions
     url: conventions/omaze-conventions.yml
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: storefront-json
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
