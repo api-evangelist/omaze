@@ -64,5 +64,112 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Omaze is a company surfaced via the API Evangelist harvest backlog (source: secondary-market) and added to the network as a stub for full-pipeline profiling.
-- https://forgeglobal.com/omaze_stock/
+Omaze is a for-profit social-impact entertainment company that runs online prize draws to raise money for charity. Founded in 2012 in Culver City, California by Matthew Pohlson and Ryan Cummins, it lets people enter draws for houses, supercars, cash and once-in-a-lifetime experiences, with a share of every entry going to a partner nonprofit; the company reports raising more than $250 million for over 600 charities and creating 50+ millionaires. Its live consumer operations today are the United Kingdom (omaze.co.uk) and Germany (omaze.de), both built on Shopify, while omaze.com serves as the corporate and brand site. Omaze publishes no developer program, no OpenAPI and no SDKs, but both storefronts do expose a genuine machine-readable agent surface: a Universal Commerce Protocol (UCP) merchant profile at /.well-known/ucp, a UCP Shopping MCP endpoint at /api/ucp/mcp, published agent instructions at /llms.txt and /agents.md, anonymous read-only storefront product JSON, and a standards-compliant OpenID Connect authorization server for customer accounts.
+
+**Areas:** Company · Charity · Fundraising · Non-Profit · Prize Draws · Sweepstakes · E-Commerce · Agentic Commerce · Universal Commerce Protocol · MCP · Shopify · United Kingdom
+
+## Omaze on APIs.io
+
+Everything profiled for Omaze is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/omaze/](https://apis.io/providers/omaze/)** — or go straight to one of the APIs or properties below.
+
+### APIs (3)
+
+- [Omaze UK UCP Shopping MCP](https://apis.io/apis/omaze/omaze-uk-ucp-shopping-mcp/) — The Universal Commerce Protocol Shopping service that Omaze UK exposes over the Model Context Protocol, advertised by Omaze in its own /agents.md and…
+- [Omaze Germany UCP Shopping MCP](https://apis.io/apis/omaze/omaze-de-ucp-shopping-mcp/) — The German-market counterpart of the Omaze UCP Shopping service, exposed over MCP at omaze.de/api/ucp/mcp and described by the merchant profile at…
+- [Omaze UK Storefront JSON](https://apis.io/apis/omaze/omaze-uk-storefront-json/) — The anonymous, read-only JSON surface of the Omaze UK storefront, documented by Omaze itself in /agents.md for agents that only need to read store data…
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [omaze-mcp.yml](https://apis.io/servers/omaze/omaze-mcp-yml/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Omaze Authentication](https://apis.io/security/omaze/omaze-authentication/)
+- [Omaze Domain Security](https://apis.io/security/omaze/omaze-domain-security/)
+
+#### OAuth scopes (1)
+
+The permissions the API asks for.
+
+- [Omaze Scopes](https://apis.io/scopes/omaze/omaze-scopes/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Omaze Rate Limits](https://apis.io/rate-limits/omaze/omaze-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.omaze.com)
+- [Documentation](https://omaze.co.uk/agents.md)
+- [Getting started](https://omaze.co.uk/llms.txt)
+- [Sign up](https://omaze.co.uk/account/register)
+- [Support](https://omaze.co.uk/pages/contact-us)
+- [Blog](https://omaze.co.uk/blogs/news)
+- [Terms of service](https://omaze.co.uk/pages/legal-terms)
+- [Privacy policy](https://omaze.co.uk/policies/privacy-policy)
+- [GitHub](https://github.com/Omaze)
+
+## API Evangelist rating
+
+**Kin Score 30.6** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 80.0 |
+| Contract quality | 0.0 |
+| Contract governance | 18.2 |
+| Operational transparency | 2.6 |
+| Developer ergonomics | 51.8 |
+| Access clarity | 34.2 |
+
+**Agent readiness 23.7** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | — |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | platform (partial credit) |
+| Auth Clarity | served (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | — |
+| Agentic Commerce | platform (partial credit) |
+
+**Regulatory alignment 34.3** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/omaze/](https://apis.io/providers/omaze/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Omaze: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/omaze/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
